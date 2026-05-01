@@ -1,0 +1,52 @@
+title "くじ引き"
+*start
+	cls
+	mes "くじ引きを引く？"
+	objsize 300,20
+	button "くじ引きを引く",*Kuzibiki
+	stop
+
+*Kuzibiki
+    cls
+    font "MS Gothic", 50, 1
+    kuzi = rnd(7)
+    if kuzi == 0: msg = "大大吉！！"
+    if kuzi == 1: msg = "大吉！！"
+    if kuzi == 2: msg = "中吉！！"
+    if kuzi == 3: msg = "小吉！！"
+    if kuzi == 4: msg = "凶"
+    if kuzi == 5: msg = "大凶"
+    if kuzi == 6: msg = "大大凶..."
+   	// log.txt に追記（既存のファイルがあれば最後に追加）
+   	sdim log_data, 65536
+	notesel log_data
+	noteload "log.txt" : if stat == -1 : log_data = "" // ファイルがない場合は空にする
+	log_msg = "" + gettime(0) + "/" + strf("%02d",gettime(1)) + "/" + strf("%02d",gettime(3)) + " " + strf("%02d",gettime(4)) + ":" + strf("%02d",gettime(5)) + " -> " + msg + "\n"
+	noteadd log_msg,-1
+	notesave "log.txt"
+    mes msg
+	objsize 300,20
+	button "もう一度",*Kuzibiki
+	button "戻る",*Start
+	button "記録を見る",*ShowLog
+	
+	
+
+	stop
+
+
+*ShowLog
+	cls
+	pos 20, 20
+	font "MS Gothic", 14
+	mes "これまでの記録:"
+	
+	sdim log_display, 4096
+	notesel log_display
+	noteload "log.txt"
+	
+	pos 20, 50
+	mesbox log_display, 600, 300, 0 // 読み取り専用のテキストボックス
+
+	button "戻る",*Start
+	stop

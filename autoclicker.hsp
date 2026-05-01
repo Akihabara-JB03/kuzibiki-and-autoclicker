@@ -1,0 +1,53 @@
+#include "user32.as"
+
+title "指定回数オートクリッカー"
+
+active = 0
+key_pressed = 0
+counter = 0        // 今何回クリックしたか
+max_count = 1000   // ★ここで止める回数を指定！
+input max_count
+button "開始の準備",*main
+stop
+*main
+	redraw 0
+	color 255, 255, 255 : boxf : color 0, 0, 0
+	pos 70, 70
+	
+	// 「1」のキー（49）の状態チェック
+	getkey k, 49
+	if k == 1 {
+		if key_pressed == 0 {
+			active = 1 - active
+			if active == 1 : counter = 0 // 開始時にカウンターをリセット
+			key_pressed = 1
+		}
+	} else {
+		key_pressed = 0
+	}
+
+	if active == 1 {
+		color 255, 0, 0
+		mes "【連打中！】"
+		mes "進捗：" + counter + " / " + max_count
+		
+		// クリック実行
+		mouse_event $0002, 0, 0, 0, 0 // LEFTDOWN
+		mouse_event $0004, 0, 0, 0, 0 // LEFTUP
+		
+		counter++ // 1増やす
+		
+		// 指定回数に達したら停止
+		if counter >= max_count {
+			active = 0
+		}
+	} else {
+		color 0, 0, 0
+		mes "停止中"
+		mes "「1」キーで " + max_count + " 回連打開始"
+		if counter >= max_count : mes "前回分は完了しました！"
+	}
+	
+	redraw 1
+	wait 5
+	goto *main
